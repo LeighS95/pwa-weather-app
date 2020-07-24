@@ -1,24 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+
+import { getWeather } from './api/getWeather';
+
+import { Header } from './components/global';
+import { Search, Weather } from './components/elements';
 
 function App() {
+
+  const [query, setQuery] = useState('');
+  const [weather, setWeather] = useState({});
+
+  const handlePress = async (e) => {
+    if(e.key === 'Enter') {
+      const data = await getWeather(query);
+      setWeather(data);
+      setQuery('');
+    }
+  }
+
+  const handleClick = async (e) => {
+    const data = await getWeather(query);
+    setWeather(data);
+    setQuery('');
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <Search onKeyPress={handlePress} onClick={handleClick} onChange={(e) => setQuery(e.target.value)} value={query} />
+      <div style={{ margin: '80px auto'}}>
+        {weather.main ? (
+          <Weather data={weather} />
+        ) : (
+          null
+        )}
+      </div>
     </div>
   );
 }
